@@ -40,32 +40,32 @@ import reactor.core.publisher.Flux;
 @Service
 public class OpenAiService {
 
-	private ChatClient chatClient;
+	private final ChatClient chatClient;
 
-	@Autowired
-	private EmbeddingModel embeddingModel;
+	private final EmbeddingModel embeddingModel;
 
-	@Autowired
-	private OpenAiImageModel openaiImageModel;
+	private final OpenAiImageModel openaiImageModel;
 
-	@Autowired
-	private OpenAiAudioTranscriptionModel openaiAudioTranscriptionModel;
+	private final OpenAiAudioTranscriptionModel openaiAudioTranscriptionModel;
 
-	@Autowired
-	private OpenAiAudioSpeechModel openaiAudioSpeechModel;
+	private final OpenAiAudioSpeechModel openaiAudioSpeechModel;
 
-	@Autowired
-	private OpenAiChatModel chatModel;
+	private final OpenAiChatModel chatModel;
 
-	@Autowired
-	private OpenAiModerationModel moderationModel;
+	private final OpenAiModerationModel moderationModel;
 
-	@Autowired
-	private VectorStore vectorStore;
+	private final VectorStore vectorStore;
 	
 
-	public OpenAiService(ChatClient.Builder builder, ChatMemory chatMemory) {
-		chatClient = builder.defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build()).build();
+	public OpenAiService(ChatClient.Builder builder, ChatMemory chatMemory, EmbeddingModel embeddingModel, OpenAiImageModel openaiImageModel, OpenAiAudioTranscriptionModel openaiAudioTranscriptionModel, OpenAiAudioSpeechModel openaiAudioSpeechModel, OpenAiChatModel chatModel, OpenAiModerationModel moderationModel, VectorStore vectorStore) {
+        this.embeddingModel = embeddingModel;
+        this.openaiImageModel = openaiImageModel;
+        this.openaiAudioTranscriptionModel = openaiAudioTranscriptionModel;
+        this.openaiAudioSpeechModel = openaiAudioSpeechModel;
+        this.chatModel = chatModel;
+        this.moderationModel = moderationModel;
+        this.vectorStore = vectorStore;
+        chatClient = builder.defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build()).build();
 	}
 
 	public ChatResponse generateAnswer(String question) {
@@ -155,11 +155,10 @@ public class OpenAiService {
 
 	public String getDietAdvice(String prompt, String path1, String path2) {
 
-		String explanation = chatClient.prompt()
-				.user(u -> u.text(prompt).media(MimeTypeUtils.IMAGE_JPEG, new FileSystemResource(path1))
-						.media(MimeTypeUtils.IMAGE_JPEG, new FileSystemResource(path2)))
-				.call().content();
-		return explanation;
+        return chatClient.prompt()
+                .user(u -> u.text(prompt).media(MimeTypeUtils.IMAGE_JPEG, new FileSystemResource(path1))
+                        .media(MimeTypeUtils.IMAGE_JPEG, new FileSystemResource(path2)))
+                .call().content();
 	}
 
 	public String speechToText(String path) {
