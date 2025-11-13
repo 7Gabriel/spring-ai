@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Cuisine Helper</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 800px; margin: 0 auto; padding-top: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { font-weight: bold; display: block; margin-bottom: 5px; }
+        input[type="text"], input[type="number"] { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ddd; }
+        button { padding: 10px 15px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .response { margin-top: 30px; padding: 20px; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; }
+        .response h3 { color: #4CAF50; font-size: 1.5em; }
+        .cuisine-list { margin-top: 15px; }
+        .cuisine-list li { margin-bottom: 10px; }
+        .cuisine-title { font-weight: bold; color: #333; }
+
+        /* Spinner Overlay */
+        .spinner-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        .spinner-overlay.active {
+            display: flex;
+        }
+        .spinner-container {
+            text-align: center;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4CAF50;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .spinner-text {
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Spinner Overlay -->
+    <div class="spinner-overlay" id="spinnerOverlay">
+        <div class="spinner-container">
+            <div class="spinner"></div>
+            <div class="spinner-text">Processando...</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Discover Cuisines by Country</h2>
+        <form action="#" th:action="@{/cuisineHelper}" th:method="post" id="mainForm">
+            <div class="form-group">
+                <label for="country">Enter a Country:</label>
+                <input type="text" id="country" name="country" placeholder="E.g., Japan, Italy, Mexico" required>
+            </div>
+            <div class="form-group">
+                <label for="numCuisines">Number of Cuisines:</label>
+                <input type="number" id="numCuisines" name="numCuisines" min="1" placeholder="E.g., 5" required>
+            </div>
+            <div class="form-group">
+                <label for="language">Language:</label>
+                <input type="text" id="language" name="language" placeholder="E.g., English, Spanish" required>
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+
+        <div class="response" th:if="${countryCuisines}">
+            <h3>Popular Cuisines in <span th:text="${countryCuisines.country}"></span>:</h3>
+            <ul class="cuisine-list">
+                <!-- Iterating over the list of cuisines and adding index manually -->
+                <li th:each="cuisine, index : ${countryCuisines.cuisines}">
+                    <span th:text="${cuisine}"></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- JavaScript for Spinner -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("mainForm");
+            const spinner = document.getElementById("spinnerOverlay");
+
+            // Show spinner when form is submitted
+            form.addEventListener("submit", function() {
+                spinner.classList.add("active");
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Chat Interface</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .chat-container { max-width: 600px; margin: 0 auto; }
+        .chat-box { border: 1px solid #ddd; padding: 20px; border-radius: 5px; }
+        .chat-input { margin-top: 10px; display: flex; }
+        input[type="text"] { flex: 1; padding: 8px; border-radius: 5px; border: 1px solid #ddd; }
+        button { padding: 8px 12px; border-radius: 5px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        .chat-response { margin-top: 15px; font-style: italic; color: #555; }
+
+        /* Spinner Overlay */
+        .spinner-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        .spinner-overlay.active {
+            display: flex;
+        }
+        .spinner-container {
+            text-align: center;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4CAF50;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .spinner-text {
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+    </style>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"></script>
+
+</head>
+<body>
+    <!-- Spinner Overlay -->
+    <div class="spinner-overlay" id="spinnerOverlay">
+        <div class="spinner-container">
+            <div class="spinner"></div>
+            <div class="spinner-text">Processando...</div>
+        </div>
+    </div>
+
+    <div class="chat-container">
+        <h2>Ask Anything</h2>
+        <div class="chat-box">
+            <form action="#" th:action="@{/askAnything}" th:method="post" id="mainForm">
+                <div class="chat-input">
+                    <input type="text" name="question" placeholder="Type your question here..."
+                           th:value="${question}" required />
+                    <button type="submit">Send</button>
+                </div>
+            </form>
+            <div class="chat-response" th:if="${answer}">
+                <p><strong>Question:</strong> <span th:text="${question}"></span></p>
+                <p><strong>Answer:</strong> <span id="markdown-content" th:text="${answer}" style="display: none;"></span></p>
+            </div>
+             <div id="rendered-html"></div>
+        </div>
+    </div>
+
+    <!-- JavaScript for Spinner -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("mainForm");
+            const spinner = document.getElementById("spinnerOverlay");
+
+            // Show spinner when form is submitted
+            form.addEventListener("submit", function() {
+                spinner.classList.add("active");
+            });
+        });
+    </script>
+
+    <!-- JavaScript to Convert Markdown to HTML -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Retrieve Markdown content
+            var markdownContent = document.getElementById("markdown-content");
+            if (markdownContent) {
+                var content = markdownContent.innerText;
+
+                // Initialize Showdown converter
+                var converter = new showdown.Converter();
+
+                // Convert Markdown to HTML
+                var htmlContent = converter.makeHtml(content);
+
+                // Render the converted HTML
+                document.getElementById("rendered-html").innerHTML = htmlContent;
+            }
+        });
+    </script>
+</body>
+</html>

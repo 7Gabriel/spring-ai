@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Data Bot</title>
+    <style>
+        /* Spinner Overlay */
+        .spinner-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 99999 !important;
+            justify-content: center;
+            align-items: center;
+        }
+        .spinner-overlay.active {
+            display: flex !important;
+        }
+        .spinner-container {
+            text-align: center;
+            z-index: 100000;
+        }
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #4CAF50;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .spinner-text {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 20px;">
+    <!-- Spinner Overlay -->
+    <div class="spinner-overlay" id="spinnerOverlay">
+        <div class="spinner-container">
+            <div class="spinner"></div>
+            <div class="spinner-text">Processando...</div>
+        </div>
+    </div>
+
+    <h1 style="color: #333; text-align: center;">Product Data Bot</h1>
+
+    <form th:action="@{/productDataBot}" method="post" id="mainForm" style="max-width: 600px; margin: auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <label for="query" style="font-weight: bold; color: #333;">Enter your query:</label><br>
+        <textarea id="query" name="query" required placeholder="Type your question here" rows="4" style="width: 100%; padding: 10px; margin-top: 8px; border: 1px solid #ccc; border-radius: 4px; resize: vertical;"></textarea><br><br>
+        <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">Submit</button>
+    </form>
+
+    <div th:if="${response != null}" style="max-width: 600px; margin: 20px auto; padding: 20px; background-color: #e7f3fe; border: 1px solid #b3d7ff; border-radius: 8px;">
+        <h2 style="color: #333;">Response:</h2>
+        <p th:text="${response}" style="color: #333;">Response will appear here.</p>
+    </div>
+
+    <!-- JavaScript for Spinner -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("mainForm");
+            const spinner = document.getElementById("spinnerOverlay");
+
+            if (form && spinner) {
+                console.log("Spinner initialized for productDataBot");
+
+                // Show spinner when form is submitted
+                form.addEventListener("submit", function(e) {
+                    console.log("Form submitted, showing spinner");
+                    spinner.classList.add("active");
+                    // Let the form submit naturally
+                }, false);
+
+                // Backup: show spinner on button click
+                const submitButton = form.querySelector('button[type="submit"]');
+                if (submitButton) {
+                    submitButton.addEventListener("click", function() {
+                        console.log("Submit button clicked");
+                        setTimeout(function() {
+                            spinner.classList.add("active");
+                        }, 10);
+                    }, false);
+                }
+            } else {
+                console.error("Form or spinner not found!");
+            }
+        });
+    </script>
+</body>
+</html>

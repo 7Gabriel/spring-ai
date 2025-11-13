@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Diet Helper</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { max-width: 600px; margin: 0 auto; padding-top: 20px; text-align: center; }
+        .form-group { margin-bottom: 15px; text-align: left; }
+        label { font-weight: bold; display: block; margin-bottom: 5px; }
+        input[type="text"], input[type="file"] { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ddd; }
+        button { padding: 10px 15px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        .response { margin-top: 20px; padding: 15px; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; }
+        .response h3 { color: #4CAF50; }
+        img { max-width: 100%; border-radius: 8px; margin-top: 10px; }
+
+        /* Spinner Overlay */
+        .spinner-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        .spinner-overlay.active {
+            display: flex;
+        }
+        .spinner-container {
+            text-align: center;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4CAF50;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .spinner-text {
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Spinner Overlay -->
+    <div class="spinner-overlay" id="spinnerOverlay">
+        <div class="spinner-container">
+            <div class="spinner"></div>
+            <div class="spinner-text">Analisando dieta...</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Diet Helper</h2>
+
+        <!-- Form to input prompt and upload files -->
+        <form th:action="@{/dietHelper}" method="post" enctype="multipart/form-data" id="mainForm">
+            <div class="form-group">
+                <label for="prompt">Diet Query:</label>
+                <input type="text" id="prompt" name="prompt" placeholder="Enter your diet-related query" required>
+            </div>
+            <div class="form-group">
+                <label for="file1">Upload First Image:</label>
+                <input type="file" id="file1" name="file1" accept="image/*" required>
+            </div>
+            <div class="form-group">
+                <label for="file2">Upload Second Image:</label>
+                <input type="file" id="file2" name="file2" accept="image/*" required>
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+
+        <!-- Display success or error message -->
+        <div class="response" th:if="${message}">
+            <p th:text="${message}"></p>
+        </div>
+
+        <!-- Display explanation and image preview if available -->
+        <div class="response" th:if="${suggestion}">
+            <h3>Diet Helper Suggestions:</h3>
+            <p th:text="${suggestion}"></p>
+        </div>
+    </div>
+
+    <!-- JavaScript for Spinner -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("mainForm");
+            const spinner = document.getElementById("spinnerOverlay");
+
+            // Show spinner when form is submitted
+            form.addEventListener("submit", function() {
+                spinner.classList.add("active");
+            });
+        });
+    </script>
+</body>
+</html>
